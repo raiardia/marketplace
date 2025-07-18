@@ -15,7 +15,16 @@ Route::view('/another-auth', 'another-auth');
 
 Route::get('/admin/login', function () {
     return view('back.pages.admin.auth.login');
-});
+})->name('admin.login');
+
+Route::post('/admin/login_handler', [AdminController::class, 'loginHandler'])->name('login_handler');
+
+Route::get('/admin/home', function () {
+    return view('back.pages.admin.home');
+})->name('admin.home');
+
+Route::post('/admin/logout', [AdminController::class, 'logoutHandler'])->name('admin.logout_handler');
+
 
 
 // Route::get('/admin', [AdminController::class, 'hello']);
