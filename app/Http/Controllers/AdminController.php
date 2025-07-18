@@ -60,4 +60,31 @@ class AdminController extends Controller
         session()->flash('fail', 'You are logged out!');
         return redirect()->route('admin.login')->with('success', 'You have been logged out successfully.');
     }
+        public function forgotPassword()
+    {
+        return view('back.pages.admin.auth.forgot-password');
+    }
+
+    // public function sendPasswordResetLink(Request $request)
+    // {
+    // $request->validate([
+    //     'email' => 'required|email|exists:admins,email',
+    // ]);
+
+    // $status = Password::broker('admins')->sendPasswordResetLink(
+    //     $request->only('email')
+    // );
+
+    // return $status === Password::RESET_LINK_SENT
+    //     ? back()->with(['status' => __($status)])
+    //     : back()->withErrors(['email' => __($status)]);
+    // }
+    // public function sendPasswordResetLink(Request $request){
+    //     return 'send via email';
+    // }
+
 }
+
+
+
+

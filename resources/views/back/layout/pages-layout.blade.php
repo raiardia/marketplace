@@ -781,5 +781,12 @@
 		<!-- Google Tag Manager (noscript) -->
 		@stack('scripts')
 		<!-- End Google Tag Manager (noscript) -->
+		<!-- <script>
+			if (navigator.userAgent.indexOf("Firefox") !== -1 ) {history.pushState(null, null, document.URL);
+				window.addEventListener("popstate", function () {
+					history.pushState(null, null, document.URL);
+				});
+			}
+		</script> -->
 	</body>
 </html>
