@@ -52,13 +52,17 @@
 				class="container-fluid d-flex justify-content-between align-items-center"
 			>
 				<div class="brand-logo">
-					<a href="login.html">
-						<img src="/back/vendors/images/deskapp-logo.svg" alt="" />
-					</a>
-				</div>
+	<a href="login.html" style="font-size: 24px; font-weight: bold; color: #333; text-decoration: none;">
+		BALIMART
+	</a>
+</div>
+
 				<div class="login-menu">
-					<ul>
+					<ul> 
+						@if ( !Route::is('admin.*'))
 						<li><a href="register.html">Register</a></li>
+						@endif
+					
 					</ul>
 				</div>
 			</div>
@@ -83,6 +87,14 @@
 		<script src="/back/vendors/scripts/script.min.js"></script>
 		<script src="/back/vendors/scripts/process.js"></script>
 		<script src="/back/vendors/scripts/layout-settings.js"></script>
+		<script>
+			if ( navigator.userAgent.indexOf("Firefox") !== -1 ) {
+				history.pushState(null, null, document.URL);
+				window.addEventListener ("popstate", function () {
+					history.pushState(null, null, document.URL);
+				});
+			}
+		</script>
 		@stack('scripts')
 	</body>
 </html>
