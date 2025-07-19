@@ -4,6 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Constants\constGuards;
+use App\Constants\constDefaults;
+use App\Models\Admin;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class AdminController extends Controller
 {
@@ -65,26 +72,80 @@ class AdminController extends Controller
         return view('back.pages.admin.auth.forgot-password');
     }
 
-    // public function sendPasswordResetLink(Request $request)
-    // {
-    // $request->validate([
-    //     'email' => 'required|email|exists:admins,email',
-    // ]);
+    public function sendPasswordResetLink(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:admins,email',
+    ], [
+        'email.required' => 'Email is required',
+        'email.email' => 'Please enter a valid email address',
+        'email.exists' => 'This email does not exist in our records',
+    ]);
 
-    // $status = Password::broker('admins')->sendPasswordResetLink(
-    //     $request->only('email')
-    // );
+    // Ambil data admin berdasarkan email
+    $admin = Admin::where('email', $request->email)->first();
 
-    // return $status === Password::RESET_LINK_SENT
-    //     ? back()->with(['status' => __($status)])
-    //     : back()->withErrors(['email' => __($status)]);
-    // }
-    // public function sendPasswordResetLink(Request $request){
-    //     return 'send via email';
-    // }
+    // Cek jika admin tidak ditemukan (sebagai perlindungan tambahan)
+    if (!$admin) {
+        return redirect()->route('admin.forgot-password')
+            ->with('fail', 'No admin found with the provided email.');
+    }
 
+    $token = base64_encode(Str::random(64));
+
+    // Ganti ini dari string menjadi konstanta (tanpa tanda kutip)
+    $guard = constGuards::ADMIN;
+
+    $oldToken = DB::table('password_reset_tokens')
+        ->where('email', $request->email)
+        ->where('guard', $guard)
+        ->first();
+
+    if ($oldToken) {
+        DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('guard', $guard)
+            ->update([
+                'token' => $token,
+                'created_at' => Carbon::now(),
+            ]);
+    } else {
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'guard' => $guard,
+            'token' => $token,
+            'created_at' => Carbon::now(),
+        ]);
+    }
+
+    $actionLink = route('admin.password-reset', ['token' => $token, 'email' => $request->email]);
+
+    $data = [
+        'actionLink' => $actionLink,
+        'email' => $request->email,
+        'admin' => $admin, // Tambahkan ini
+    ];
+
+    $mail_body = view('email-templates.admin-forgot-email-template', $data)->render();
+
+    $mailConfig = [
+        'mail_from_email' => env('MAIL_FROM_ADDRESS'),
+        'mail_from_name' => env('MAIL_FROM_NAME'),
+        'mail_recipient_email' => $admin->email,
+        'mail_recipient_name' => $admin->name,
+        'mail_subject' => 'Password Reset Request',
+        'mail_body' => $mail_body,
+    ];
+
+    if (sendEmail($mailConfig)) {
+        return redirect()->route('admin.forgot-password')->with('success', 'Password reset link sent to your email.');
+    } else {
+        return redirect()->route('admin.forgot-password')->with('fail', 'Failed to send password reset link. Please try again later.');
+    }
 }
 
 
 
 
+
+}

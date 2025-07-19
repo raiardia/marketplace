@@ -29,8 +29,7 @@ Route::get('/admin/forgot-password', [AdminController::class, 'forgotPassword'])
 
 Route::post('/admin/send-password-reset-link', [AdminController::class, 'sendPasswordResetLink'])->name('admins.send_password_reset_link');
 
-
-
+Route::get('/admin/password/reset/{token}', [AdminController::class, 'resetPassword'])->name('admin.password-reset');
 
 // Route::get('/admin', [AdminController::class, 'hello']);
 // Route::get('/admin', 'admin-dashboard');

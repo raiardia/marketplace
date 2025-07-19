@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Constants;
+
 class constGuards
 {
     const ADMIN = 'admin';

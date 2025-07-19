@@ -12,7 +12,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/send-password-reset-link', [AdminController::class, 'sendPasswordResetLink'])->name('send-password-reset-link');
         Route::get('/password/reset/{token}', [AdminController::class, 'resetPassword'])->name('password-reset');
         Route::post('/admin/forgot-password', [AdminController::class, 'sendResetLink'])->name('admin.send-password-reset-link');
-
+        Route::get('/password/reset/{token}', [AdminController::class, 'resetPassword'])->name('admin.password-reset');
     });
 
     Route::middleware(['auth:admin', 'PreventBackHistory'])->group(function () {
